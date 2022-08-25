@@ -21,7 +21,7 @@ class Snake {
     this.y = canvas.height / 2;
     this.w = 10;
     this.h = 10;
-    this.speed = 5;
+    this.speed = 10;
     this.segments = [];
   }
 
@@ -31,7 +31,9 @@ class Snake {
   }
 
   update() {
-    switch (state.moving) {
+    const { moving, movementDelay, frame } = state;
+    if (frame % movementDelay !== 0) return;
+    switch (moving) {
       case DIRECTIONS.LEFT:
         this.x -= this.speed;
         break;
@@ -65,10 +67,11 @@ const state = {
   snake: new Snake(),
   over: false,
   moving: DIRECTIONS.RIGHT,
+  movementDelay: 50,
+  frame: 0,
 };
 
 window.addEventListener("keydown", (e) => {
-  console.log(state.moving);
   switch (e.key.toLowerCase()) {
     case "arrowup":
       state.moving = DIRECTIONS.UP;
@@ -93,5 +96,6 @@ function handlePlayerSquare() {
 (function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   handlePlayerSquare();
+  state.frame++;
   if (!state.over) requestAnimationFrame(animate);
 })();
