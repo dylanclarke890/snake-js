@@ -89,14 +89,14 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-function handlePlayerSquare() {
+function handleSnake() {
   state.snake.update();
   state.snake.draw();
 }
 
 (function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  handlePlayerSquare();
+  handleSnake();
   state.frame++;
   if (!state.over) requestAnimationFrame(animate);
 })();
