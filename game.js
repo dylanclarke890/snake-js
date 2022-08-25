@@ -31,10 +31,22 @@ class Snake {
   }
 
   update() {
-    if (pressingKeys.up) this.y -= this.speed;
-    if (pressingKeys.down) this.y += this.speed;
-    if (pressingKeys.left) this.x -= this.speed;
-    if (pressingKeys.right) this.x += this.speed;
+    switch (state.moving) {
+      case DIRECTIONS.LEFT:
+        this.x -= this.speed;
+        break;
+      case DIRECTIONS.RIGHT:
+        this.x += this.speed;
+        break;
+      case DIRECTIONS.UP:
+        this.y -= this.speed;
+        break;
+      case DIRECTIONS.DOWN:
+        this.y += this.speed;
+        break;
+      default:
+        break;
+    }
     if (this.y <= 0) this.y = 0;
     if (this.y + this.h >= canvas.height) this.y = canvas.height - this.h;
     if (this.x <= 0) this.x = 0;
@@ -42,48 +54,33 @@ class Snake {
   }
 }
 
+const DIRECTIONS = {
+  LEFT: "left",
+  RIGHT: "right",
+  UP: "up",
+  DOWN: "down",
+};
+
 const state = {
   snake: new Snake(),
   over: false,
-};
-
-const pressingKeys = {
-  up: false,
-  down: false,
-  left: false,
-  right: false,
+  moving: DIRECTIONS.RIGHT,
 };
 
 window.addEventListener("keydown", (e) => {
+  console.log(state.moving);
   switch (e.key.toLowerCase()) {
     case "arrowup":
-      pressingKeys.up = true;
+      state.moving = DIRECTIONS.UP;
       break;
     case "arrowdown":
-      pressingKeys.down = true;
+      state.moving = DIRECTIONS.DOWN;
       break;
     case "arrowleft":
-      pressingKeys.left = true;
+      state.moving = DIRECTIONS.LEFT;
       break;
     case "arrowright":
-      pressingKeys.right = true;
-      break;
-  }
-});
-
-window.addEventListener("keyup", (e) => {
-  switch (e.key.toLowerCase()) {
-    case "arrowup":
-      pressingKeys.up = false;
-      break;
-    case "arrowdown":
-      pressingKeys.down = false;
-      break;
-    case "arrowleft":
-      pressingKeys.left = false;
-      break;
-    case "arrowright":
-      pressingKeys.right = false;
+      state.moving = DIRECTIONS.RIGHT;
       break;
   }
 });
