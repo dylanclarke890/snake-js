@@ -8,6 +8,13 @@ function new2dCanvas(id, width, height) {
 
 const [canvas, ctx] = new2dCanvas("play-area", 800, 500);
 
+class Segment {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+}
+
 class Snake {
   constructor() {
     this.x = canvas.width / 2;
@@ -15,6 +22,7 @@ class Snake {
     this.w = 10;
     this.h = 10;
     this.speed = 5;
+    this.segments = [];
   }
 
   draw() {
