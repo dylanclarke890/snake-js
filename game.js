@@ -49,10 +49,11 @@ class Snake {
       default:
         break;
     }
-    if (this.y <= 0) this.y = 0;
-    if (this.y + this.h >= canvas.height) this.y = canvas.height - this.h;
-    if (this.x <= 0) this.x = 0;
-    if (this.x + this.w >= canvas.width) this.x = canvas.width - this.w;
+    if (this.y <= 0 || this.y + this.h >= canvas.height || this.x <= 0 || this.x + this.w >= canvas.width) state.over = true;
+    // if (this.y <= 0) this.y = 0;
+    // if (this.y + this.h >= canvas.height) this.y = canvas.height - this.h;
+    // if (this.x <= 0) this.x = 0;
+    // if (this.x + this.w >= canvas.width) this.x = canvas.width - this.w;
   }
 }
 
@@ -89,8 +90,8 @@ window.addEventListener("keydown", (e) => {
 });
 
 function handlePlayerSquare() {
-  state.snake.draw();
   state.snake.update();
+  state.snake.draw();
 }
 
 (function animate() {
