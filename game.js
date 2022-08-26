@@ -131,7 +131,8 @@ const DIRECTIONS = {
 
 const settings = {
   segmentSize: 20,
-  movementDelay: 15,
+  movementDelay: 50,
+  minDelay: 5,
   dropSize: 10,
 };
 
@@ -180,6 +181,8 @@ function handleObjective() {
     state.objective = null;
     state.snake.addSegment();
     state.score++;
+    if (state.score % 2 === 0 && settings.movementDelay > settings.minDelay)
+      settings.movementDelay -= 5;
   }
 }
 
