@@ -33,7 +33,13 @@ class Segment {
 class Snake {
   constructor() {
     this.speed = settings.segmentSize;
-    this.head = new Segment(canvas.width / 2, canvas.height / 2);
+    const x =
+      Math.floor((Math.random() * canvas.width) / settings.segmentSize) *
+      settings.segmentSize;
+    const y =
+      Math.floor((Math.random() * canvas.height) / settings.segmentSize) *
+      settings.segmentSize;
+    this.head = new Segment(x, y);
     this.segments = [];
   }
 
@@ -82,8 +88,8 @@ class Snake {
 
     if (
       this.head.y < 0 ||
-      this.head.y + this.head.h >= canvas.height ||
-      this.head.x <= 0 ||
+      this.head.y + this.head.h > canvas.height ||
+      this.head.x < 0 ||
       this.head.x + this.head.w > canvas.width ||
       this.segments.some(
         (segment) => this.head.x === segment.x && this.head.y === segment.y
@@ -101,9 +107,11 @@ class Snake {
 class Objective {
   constructor() {
     this.x =
-      Math.floor((Math.random() * canvas.width) / 10) * settings.segmentSize;
+      Math.floor((Math.random() * canvas.width) / settings.segmentSize) *
+      settings.segmentSize;
     this.y =
-      Math.floor((Math.random() * canvas.height) / 10) * settings.segmentSize;
+      Math.floor((Math.random() * canvas.height) / settings.segmentSize) *
+      settings.segmentSize;
     this.w = settings.dropSize;
     this.h = settings.dropSize;
   }
@@ -122,9 +130,9 @@ const DIRECTIONS = {
 };
 
 const settings = {
-  segmentSize: 10,
-  movementDelay: 20,
-  dropSize: 5,
+  segmentSize: 20,
+  movementDelay: 15,
+  dropSize: 10,
 };
 
 const state = {
@@ -139,15 +147,19 @@ const state = {
 window.addEventListener("keydown", (e) => {
   switch (e.key.toLowerCase()) {
     case "arrowup":
+    case "w":
       if (state.moving !== DIRECTIONS.DOWN) state.moving = DIRECTIONS.UP;
       break;
     case "arrowdown":
+    case "s":
       if (state.moving !== DIRECTIONS.UP) state.moving = DIRECTIONS.DOWN;
       break;
     case "arrowleft":
+    case "a":
       if (state.moving !== DIRECTIONS.RIGHT) state.moving = DIRECTIONS.LEFT;
       break;
     case "arrowright":
+    case "d":
       if (state.moving !== DIRECTIONS.LEFT) state.moving = DIRECTIONS.RIGHT;
       break;
   }
