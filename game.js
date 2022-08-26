@@ -66,8 +66,8 @@ class Snake {
   }
 
   update() {
-    const { moving, frame } = state;
-    if (frame % settings.movementDelay !== 0) return;
+    const { moving, frame, over } = state;
+    if (frame % settings.movementDelay !== 0 || over) return;
 
     const prev = {
       x: this.head.x,
