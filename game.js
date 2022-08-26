@@ -139,16 +139,16 @@ const state = {
 window.addEventListener("keydown", (e) => {
   switch (e.key.toLowerCase()) {
     case "arrowup":
-      state.moving = DIRECTIONS.UP;
+      if (state.moving !== DIRECTIONS.DOWN) state.moving = DIRECTIONS.UP;
       break;
     case "arrowdown":
-      state.moving = DIRECTIONS.DOWN;
+      if (state.moving !== DIRECTIONS.UP) state.moving = DIRECTIONS.DOWN;
       break;
     case "arrowleft":
-      state.moving = DIRECTIONS.LEFT;
+      if (state.moving !== DIRECTIONS.RIGHT) state.moving = DIRECTIONS.LEFT;
       break;
     case "arrowright":
-      state.moving = DIRECTIONS.RIGHT;
+      if (state.moving !== DIRECTIONS.LEFT) state.moving = DIRECTIONS.RIGHT;
       break;
   }
 });
