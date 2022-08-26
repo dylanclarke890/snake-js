@@ -18,65 +18,86 @@ class Segment {
   constructor(x, y) {
     this.x = x;
     this.y = y;
-  }
-}
-
-class Snake {
-  constructor() {
-    this.x = canvas.width / 2;
-    this.y = canvas.height / 2;
-    this.w = 10;
-    this.h = 10;
-    this.speed = 10;
-    this.segments = [];
+    this.w = settings.segmentSize;
+    this.h = settings.segmentSize;
   }
 
   draw() {
     ctx.fillStyle = "blue";
     ctx.fillRect(this.x, this.y, this.w, this.h);
   }
+}
+
+class Snake {
+  constructor() {
+    this.speed = settings.segmentSize;
+    this.segments = [new Segment(canvas.width / 2, canvas.height / 2)];
+  }
+
+  draw() {
+    for (let i = 0; i < this.segments.length; i++) {
+      this.segments[i].draw();
+    }
+  }
 
   update() {
-    const { moving, movementDelay, frame } = state;
-    if (frame % movementDelay !== 0) return;
+    const { moving, frame } = state;
+    if (frame % settings.movementDelay !== 0) return;
+
+    const move = {
+      x: 0,
+      y: 0,
+    };
     switch (moving) {
       case DIRECTIONS.LEFT:
-        this.x -= this.speed;
+        move.x -= this.speed;
         break;
       case DIRECTIONS.RIGHT:
-        this.x += this.speed;
+        move.x += this.speed;
         break;
       case DIRECTIONS.UP:
-        this.y -= this.speed;
+        move.y -= this.speed;
         break;
       case DIRECTIONS.DOWN:
-        this.y += this.speed;
+        move.y += this.speed;
         break;
       default:
         break;
     }
-    if (
-      this.y <= 0 ||
-      this.y + this.h >= canvas.height ||
-      this.x <= 0 ||
-      this.x + this.w >= canvas.width
-    )
-      state.over = true;
-    // if (this.y <= 0) this.y = 0;
-    // if (this.y + this.h >= canvas.height) this.y = canvas.height - this.h;
-    // if (this.x <= 0) this.x = 0;
-    // if (this.x + this.w >= canvas.width) this.x = canvas.width - this.w;
+
+    for (let i = 0; i < this.segments.length; i++) {
+      this.segments[i].x += move.x;
+      this.segments[i].y += move.y;
+    }
+
+    // if (
+    //   this.y <= 0 ||
+    //   this.y + this.h >= canvas.height ||
+    //   this.x <= 0 ||
+    //   this.x + this.w >= canvas.width
+    // )
+    //   state.over = true;
+  }
+
+  addSegment() {
+    const lastSegment = this.segments[this.segments.length - 1];
+    this.segments.push(
+      new Segment(
+        lastSegment.x + settings.segmentSize,
+        lastSegment.y + settings.segmentSize
+      )
+    );
   }
 }
 
 class Objective {
   constructor() {
     this.x =
-      Math.floor((Math.random() * canvas.width) / 10) * state.segmentSize;
+      Math.floor((Math.random() * canvas.width) / 10) * settings.segmentSize;
     this.y =
-      Math.floor((Math.random() * canvas.height) / 10) * state.segmentSize;
-    this.w = state.dropSize;
-    this.h = state.dropSize;
+      Math.floor((Math.random() * canvas.height) / 10) * settings.segmentSize;
+    this.w = settings.dropSize;
+    this.h = settings.dropSize;
   }
 
   draw() {
@@ -92,14 +113,16 @@ const DIRECTIONS = {
   DOWN: "down",
 };
 
+const settings = {
+  segmentSize: 10,
+  movementDelay: 20,
+  dropSize: 5,
+};
+
 const state = {
   snake: new Snake(),
-  segmentSize: 10,
   over: false,
   moving: DIRECTIONS.RIGHT,
-  movementDelay: 20,
-  pickupDropInterval: 40,
-  dropSize: 5,
   frame: 0,
   objective: null,
   score: 0,
@@ -131,10 +154,13 @@ function handleObjective() {
   if (state.objective === null) state.objective = new Objective();
   state.objective.draw();
   if (
-    state.objective.y === state.snake.y &&
-    state.objective.x === state.snake.x
+    state.snake.segments.some(
+      (segment) =>
+        state.objective.y === segment.y && state.objective.x === segment.x
+    )
   ) {
     state.objective = null;
+    state.snake.addSegment();
     state.score++;
   }
 }
