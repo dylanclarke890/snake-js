@@ -25,6 +25,8 @@ class Segment {
   draw() {
     ctx.fillStyle = "blue";
     ctx.fillRect(this.x, this.y, this.w, this.h);
+    ctx.fillStyle = "transparent";
+    ctx.strokeRect(this.x, this.y, this.w, this.h);
   }
 }
 
