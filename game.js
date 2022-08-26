@@ -102,6 +102,7 @@ const state = {
   dropSize: 5,
   frame: 0,
   objective: null,
+  score: 0,
 };
 
 window.addEventListener("keydown", (e) => {
@@ -131,6 +132,10 @@ function handlePickups() {
   state.objective.draw();
 }
 
+function handleScore() {
+  drawText(state.score, "30px Arial", "darkgreen", canvas.width / 2 - 20, 40);
+}
+
 function handleGameOver() {
   drawText(
     "GAME OVER",
@@ -145,6 +150,7 @@ function handleGameOver() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   handleSnake();
   handlePickups();
+  handleScore();
   state.frame++;
   if (!state.over) requestAnimationFrame(animate);
   else handleGameOver();
