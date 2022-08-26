@@ -216,6 +216,13 @@ function handleGameOver() {
     canvas.width / 2 - 200,
     canvas.height / 2 - 100
   );
+  drawText(
+    `Final Score: ${state.score}`,
+    "20px Arial",
+    "yellow",
+    canvas.width / 2 - 60,
+    canvas.height / 2 - 50
+  );
   const { x, y, w, h, hover } = startBtn;
   ctx.fillStyle = hover ? "darkgreen" : "green";
   ctx.fillRect(x, y, w, h);
