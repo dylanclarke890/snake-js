@@ -81,22 +81,20 @@ class Snake {
     }
 
     if (
-      this.head.x <= 0 ||
+      this.head.y < 0 ||
       this.head.y + this.head.h >= canvas.height ||
       this.head.x <= 0 ||
-      this.head.x + this.head.w >= canvas.width
+      this.head.x + this.head.w > canvas.width ||
+      this.segments.some(
+        (segment) => this.head.x === segment.x && this.head.y === segment.y
+      )
     )
       state.over = true;
   }
 
   addSegment() {
-    const lastSegment = this.segments[this.segments.length - 1] || this.head;
-    this.segments.push(
-      new Segment(
-        lastSegment.x + settings.segmentSize,
-        lastSegment.y + settings.segmentSize
-      )
-    );
+    const tail = this.segments[this.segments.length - 1] || this.head;
+    this.segments.push(new Segment(tail.x, tail.y));
   }
 }
 
