@@ -69,7 +69,7 @@ class Snake {
   }
 }
 
-class Pickup {
+class Objective {
   constructor() {
     this.x =
       Math.floor((Math.random() * canvas.width) / 10) * state.segmentSize;
@@ -127,9 +127,16 @@ function handleSnake() {
   state.snake.draw();
 }
 
-function handlePickups() {
-  if (state.objective === null) state.objective = new Pickup();
+function handleObjective() {
+  if (state.objective === null) state.objective = new Objective();
   state.objective.draw();
+  if (
+    state.objective.y === state.snake.y &&
+    state.objective.x === state.snake.x
+  ) {
+    state.objective = null;
+    state.score++;
+  }
 }
 
 function handleScore() {
@@ -149,7 +156,7 @@ function handleGameOver() {
 (function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   handleSnake();
-  handlePickups();
+  handleObjective();
   handleScore();
   state.frame++;
   if (!state.over) requestAnimationFrame(animate);
