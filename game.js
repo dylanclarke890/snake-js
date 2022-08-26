@@ -144,12 +144,14 @@ const DIRECTIONS = {
   DOWN: "down",
 };
 
-const settings = {
+const defaultSettings = {
   segmentSize: 20,
   movementDelay: 50,
   minDelay: 5,
   dropSize: 10,
 };
+
+let settings = defaultSettings;
 
 let defaultState = () => ({
   started: false,
@@ -256,7 +258,10 @@ canvas.addEventListener("click", (e) => {
   if (!state.started) {
     state.started = isColliding(mouse, startBtn);
   }
-  if (state.over && isColliding(mouse, startBtn)) state = defaultState();
+  if (state.over && isColliding(mouse, startBtn)) {
+    state = defaultState();
+    settings = defaultSettings;
+  }
 });
 
 window.addEventListener("resize", () => {
