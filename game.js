@@ -31,10 +31,12 @@ class Segment {
 class Snake {
   constructor() {
     this.speed = settings.segmentSize;
-    this.segments = [new Segment(canvas.width / 2, canvas.height / 2)];
+    this.head = new Segment(canvas.width / 2, canvas.height / 2);
+    this.segments = [];
   }
 
   draw() {
+    this.head.draw();
     for (let i = 0; i < this.segments.length; i++) {
       this.segments[i].draw();
     }
@@ -44,43 +46,49 @@ class Snake {
     const { moving, frame } = state;
     if (frame % settings.movementDelay !== 0) return;
 
-    const move = {
-      x: 0,
-      y: 0,
+    const prev = {
+      x: this.head.x,
+      y: this.head.y,
     };
     switch (moving) {
       case DIRECTIONS.LEFT:
-        move.x -= this.speed;
+        this.head.x -= this.speed;
         break;
       case DIRECTIONS.RIGHT:
-        move.x += this.speed;
+        this.head.x += this.speed;
         break;
       case DIRECTIONS.UP:
-        move.y -= this.speed;
+        this.head.y -= this.speed;
         break;
       case DIRECTIONS.DOWN:
-        move.y += this.speed;
+        this.head.y += this.speed;
         break;
       default:
         break;
     }
 
     for (let i = 0; i < this.segments.length; i++) {
-      this.segments[i].x += move.x;
-      this.segments[i].y += move.y;
+      const temp = {
+        x: this.segments[i].x,
+        y: this.segments[i].y,
+      };
+      this.segments[i].x = prev.x;
+      this.segments[i].y = prev.y;
+      prev.x = temp.x;
+      prev.y = temp.y;
     }
 
-    // if (
-    //   this.y <= 0 ||
-    //   this.y + this.h >= canvas.height ||
-    //   this.x <= 0 ||
-    //   this.x + this.w >= canvas.width
-    // )
-    //   state.over = true;
+    if (
+      this.head.x <= 0 ||
+      this.head.y + this.head.h >= canvas.height ||
+      this.head.x <= 0 ||
+      this.head.x + this.head.w >= canvas.width
+    )
+      state.over = true;
   }
 
   addSegment() {
-    const lastSegment = this.segments[this.segments.length - 1];
+    const lastSegment = this.segments[this.segments.length - 1] || this.head;
     this.segments.push(
       new Segment(
         lastSegment.x + settings.segmentSize,
@@ -154,10 +162,8 @@ function handleObjective() {
   if (state.objective === null) state.objective = new Objective();
   state.objective.draw();
   if (
-    state.snake.segments.some(
-      (segment) =>
-        state.objective.y === segment.y && state.objective.x === segment.x
-    )
+    state.objective.y === state.snake.head.y &&
+    state.objective.x === state.snake.head.x
   ) {
     state.objective = null;
     state.snake.addSegment();
