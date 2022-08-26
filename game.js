@@ -6,6 +6,12 @@ function new2dCanvas(id, width, height) {
   return [canvas, ctx];
 }
 
+function drawText(text, font, fillStyle, x, y, maxWidth = undefined) {
+  if (font) ctx.font = font;
+  if (fillStyle) ctx.fillStyle = fillStyle;
+  ctx.fillText(text, x, y, maxWidth);
+}
+
 const [canvas, ctx] = new2dCanvas("play-area", 800, 500);
 
 class Segment {
@@ -49,11 +55,33 @@ class Snake {
       default:
         break;
     }
-    if (this.y <= 0 || this.y + this.h >= canvas.height || this.x <= 0 || this.x + this.w >= canvas.width) state.over = true;
+    if (
+      this.y <= 0 ||
+      this.y + this.h >= canvas.height ||
+      this.x <= 0 ||
+      this.x + this.w >= canvas.width
+    )
+      state.over = true;
     // if (this.y <= 0) this.y = 0;
     // if (this.y + this.h >= canvas.height) this.y = canvas.height - this.h;
     // if (this.x <= 0) this.x = 0;
     // if (this.x + this.w >= canvas.width) this.x = canvas.width - this.w;
+  }
+}
+
+class Pickup {
+  constructor() {
+    this.x =
+      Math.floor((Math.random() * canvas.width) / 10) * state.segmentSize;
+    this.y =
+      Math.floor((Math.random() * canvas.height) / 10) * state.segmentSize;
+    this.w = state.dropSize;
+    this.h = state.dropSize;
+  }
+
+  draw() {
+    ctx.fillStyle = "yellow";
+    ctx.fillRect(this.x + this.w / 2, this.y + this.h / 2, this.w, this.h);
   }
 }
 
@@ -66,10 +94,14 @@ const DIRECTIONS = {
 
 const state = {
   snake: new Snake(),
+  segmentSize: 10,
   over: false,
   moving: DIRECTIONS.RIGHT,
-  movementDelay: 50,
+  movementDelay: 20,
+  pickupDropInterval: 40,
+  dropSize: 5,
   frame: 0,
+  objective: null,
 };
 
 window.addEventListener("keydown", (e) => {
@@ -94,9 +126,26 @@ function handleSnake() {
   state.snake.draw();
 }
 
+function handlePickups() {
+  if (state.objective === null) state.objective = new Pickup();
+  state.objective.draw();
+}
+
+function handleGameOver() {
+  drawText(
+    "GAME OVER",
+    "60px Arial",
+    "darkgreen",
+    canvas.width / 2 - 200,
+    canvas.height / 2
+  );
+}
+
 (function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   handleSnake();
+  handlePickups();
   state.frame++;
   if (!state.over) requestAnimationFrame(animate);
+  else handleGameOver();
 })();
