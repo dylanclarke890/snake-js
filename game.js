@@ -151,7 +151,7 @@ const settings = {
   dropSize: 10,
 };
 
-const state = {
+let defaultState = () => ({
   started: false,
   snake: new Snake(),
   over: false,
@@ -159,7 +159,9 @@ const state = {
   frame: 0,
   objective: null,
   score: 0,
-};
+});
+
+let state = defaultState();
 
 window.addEventListener("keydown", (e) => {
   switch (e.key.toLowerCase()) {
@@ -212,8 +214,12 @@ function handleGameOver() {
     "60px Arial",
     "yellow",
     canvas.width / 2 - 200,
-    canvas.height / 2
+    canvas.height / 2 - 100
   );
+  const { x, y, w, h, hover } = startBtn;
+  ctx.fillStyle = hover ? "darkgreen" : "green";
+  ctx.fillRect(x, y, w, h);
+  drawText("Restart", "20px Arial", "yellow", x + 20, y + 20);
 }
 
 let canvasPosition = canvas.getBoundingClientRect();
@@ -243,6 +249,7 @@ canvas.addEventListener("click", (e) => {
   if (!state.started) {
     state.started = isColliding(mouse, startBtn);
   }
+  if (state.over && isColliding(mouse, startBtn)) state = defaultState();
 });
 
 window.addEventListener("resize", () => {
@@ -264,16 +271,18 @@ function handleStart() {
 }
 
 (function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (!state.started) {
     handleStart();
     requestAnimationFrame(animate);
     return;
   }
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   handleSnake();
   handleObjective();
   handleScore();
   state.frame++;
-  if (!state.over) requestAnimationFrame(animate);
-  else handleGameOver();
+  if (state.over) {
+    handleGameOver();
+    requestAnimationFrame(animate);
+  } else requestAnimationFrame(animate);
 })();
