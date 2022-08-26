@@ -12,6 +12,21 @@ function drawText(text, font, fillStyle, x, y, maxWidth = undefined) {
   ctx.fillText(text, x, y, maxWidth);
 }
 
+function isColliding(first, second) {
+  if (!first || !second) return false;
+  if (
+    !(
+      first.x > second.x + second.w ||
+      first.x + first.w < second.x ||
+      first.y > second.y + second.h ||
+      first.y + first.h < second.y
+    )
+  ) {
+    return true;
+  }
+  return false;
+}
+
 const [canvas, ctx] = new2dCanvas("play-area", 800, 500);
 
 class Segment {
@@ -137,6 +152,7 @@ const settings = {
 };
 
 const state = {
+  started: false,
   snake: new Snake(),
   over: false,
   moving: DIRECTIONS.RIGHT,
@@ -194,13 +210,65 @@ function handleGameOver() {
   drawText(
     "GAME OVER",
     "60px Arial",
-    "darkgreen",
+    "yellow",
     canvas.width / 2 - 200,
     canvas.height / 2
   );
 }
 
+let canvasPosition = canvas.getBoundingClientRect();
+
+const startBtn = {
+  x: canvas.width / 2 - 50,
+  y: canvas.height / 2 - 15,
+  w: 100,
+  h: 30,
+  hover: false,
+};
+
+const mouse = {
+  x: 0,
+  y: 0,
+  w: 0.1,
+  h: 0.1,
+};
+
+canvas.addEventListener("mousemove", (e) => {
+  mouse.x = e.x - canvasPosition.left;
+  mouse.y = e.y - canvasPosition.top;
+  startBtn.hover = isColliding(mouse, startBtn);
+});
+
+canvas.addEventListener("click", (e) => {
+  if (!state.started) {
+    state.started = isColliding(mouse, startBtn);
+  }
+});
+
+window.addEventListener("resize", () => {
+  canvasPosition = canvas.getBoundingClientRect();
+});
+
+function handleStart() {
+  drawText(
+    "SNAKE",
+    "80px Arial",
+    "yellow",
+    canvas.width / 2 - 150,
+    canvas.height / 2 - 100
+  );
+  const { x, y, w, h, hover } = startBtn;
+  ctx.fillStyle = hover ? "darkgreen" : "green";
+  ctx.fillRect(x, y, w, h);
+  drawText("Start", "20px Arial", "yellow", x + 30, y + 20);
+}
+
 (function animate() {
+  if (!state.started) {
+    handleStart();
+    requestAnimationFrame(animate);
+    return;
+  }
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   handleSnake();
   handleObjective();
